@@ -97,62 +97,42 @@ class SortingRobot:
         Sort the robot's list.
         """
         def move_far_left(self):
+            # Move to index 1
             while (self.can_move_left()):
                 self.move_left()
-
-        def loop_compares(self):
-            move_far_left(self)
-            while (self.compare_item() != None):
-                # If items are equal: move right once, swap, return far left
-                if self.compare_item() == 0:
-                    self.move_right()
-                    self.swap_item()
-                    print(f'Swapped for: {self._item}')
-                    move_far_left(self)
-                # If held item < compared item: swap, return to far left
-                if self.compare_item() == -1:
-                    self.swap_item()
-                    print(f'Swapped for: {self._item}')
-                    move_far_left(self)
-                # If held item > compared item: keep moving
-                else:
-                    self.move_right()
-
-        # Take last item, light == "ON" indicates robot is holding an item
-        while (self.can_move_right()):
             self.move_right()
+
+        # Initial Movements
+        move_far_left(self)
+        # Swap `None` for item at index 0
+        self.move_left()
         self.swap_item()
-        print('Swapped far right item')
+        self.move_right()
+        # Turn on light: "Robot has item"
         self.set_light_on()
 
-        # Move to the far left 
-        move_far_left(self)
-        
-        # Sorting loop
-        loop_compares(self)
-        print('Loop exited')
-        
-        # Check if list is sorted
-        if self.compare_item() == None:
-            self.move_left()
-            self.swap_item()
-            move_far_left(self)
-            loop_compares(self)
-            if self.compare_item() == None:
-                print('Loop exited')
-                self.swap_item()
-                return None
+        while (self.light_is_on):
+            pass
 
 
-# Design Notes
-# Initially, take last item
-# Move to the far left then begin to compare_items() until 0 (equal to) or -1 (less than) is returned.
-# At that point swap_items()
-# If the item can't be swapped as the robot moves to the right (largest item), swap with last item
-# Once items are swapped, return again to the far left and begin comparing and moving right
-# If the numbers are identical and robot can move to the right, then swap the held item with the one on the right
-# If its on the far right with an identical item then swap on the left 
 
+
+# Design Notes: Playing cards helped visualize this
+# Move to far left. Pick up item, making `None` position at index 0. 
+# Turn on light. (This means item in hand)
+# Move to index 1.
+#
+# Loop while (light is on):
+#     Compare. 
+#     If larger, move right then `continue` loop from top.
+#     If smaller, swap, move to ind=1 then `continue` loop from top.
+#     If smaller and can't move right any longer, move left, swap, move to ind=1. `cont`
+#     If smaller AND smaller than item to the right, move left then swap, move to ind=1. 
+#          If item != None: `cont`
+#          If item == None: turn light OFF
+#     If larger and can't move right any longer, swap, move to ind=1. `cont`
+#     If equal and can move left, move left, swap, move to ind=1. `cont`
+#     If equal and can't move left, move right and swap. `cont`
 
 
 
