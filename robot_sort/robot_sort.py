@@ -96,15 +96,76 @@ class SortingRobot:
         """
         Sort the robot's list.
         """
-        # Fill this out
-        pass
+        def move_far_left(self):
+            while (self.can_move_left()):
+                self.move_left()
+
+        def loop_compares(self):
+            move_far_left(self)
+            while (self.compare_item() != None):
+                # If items are equal: move right once, swap, return far left
+                if self.compare_item() == 0:
+                    self.move_right()
+                    self.swap_item()
+                    print(f'Swapped for: {self._item}')
+                    move_far_left(self)
+                # If held item < compared item: swap, return to far left
+                if self.compare_item() == -1:
+                    self.swap_item()
+                    print(f'Swapped for: {self._item}')
+                    move_far_left(self)
+                # If held item > compared item: keep moving
+                else:
+                    self.move_right()
+
+        # Take last item, light == "ON" indicates robot is holding an item
+        while (self.can_move_right()):
+            self.move_right()
+        self.swap_item()
+        print('Swapped far right item')
+        self.set_light_on()
+
+        # Move to the far left 
+        move_far_left(self)
+        
+        # Sorting loop
+        loop_compares(self)
+        print('Loop exited')
+        
+        # Check if list is sorted
+        if self.compare_item() == None:
+            self.move_left()
+            self.swap_item()
+            move_far_left(self)
+            loop_compares(self)
+            if self.compare_item() == None:
+                print('Loop exited')
+                self.swap_item()
+                return None
+
+
+# Design Notes
+# Initially, take last item
+# Move to the far left then begin to compare_items() until 0 (equal to) or -1 (less than) is returned.
+# At that point swap_items()
+# If the item can't be swapped as the robot moves to the right (largest item), swap with last item
+# Once items are swapped, return again to the far left and begin comparing and moving right
+# If the numbers are identical and robot can move to the right, then swap the held item with the one on the right
+# If its on the far right with an identical item then swap on the left 
+
+
+
 
 
 if __name__ == "__main__":
     # Test our your implementation from the command line
     # with `python robot_sort.py`
 
-    l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87, 82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81, 30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39, 32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74, 77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
+    l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87,\
+         82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81,\
+         30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39,\
+         32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74,\
+         77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
 
     robot = SortingRobot(l)
 
