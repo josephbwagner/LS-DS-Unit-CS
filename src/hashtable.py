@@ -50,7 +50,15 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        elem = self.storage[index]
+        if elem is None:
+            elem = LinkedPair(key, value)
+            self.storage[index] = elem
+            return
+        else:
+            # Implement Linked List Chaining
+            print("ERROR: Hash Collision")
 
     def remove(self, key):
         '''
@@ -60,7 +68,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        elem = self.storage[index]
+        if elem is not None:
+            temp = elem
+            elem = None
+            return temp.value
 
     def retrieve(self, key):
         '''
@@ -70,7 +83,11 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        elem = self.storage[index]
+        if elem is not None:
+            return elem.value
+        return None
 
     def resize(self):
         '''
@@ -79,7 +96,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
+        for value in self.storage:
+            if value is not None:
+                index = self._hash_mod(value.key)
+                new_storage[index] = value
+        self.storage = new_storage
 
 
 if __name__ == "__main__":
