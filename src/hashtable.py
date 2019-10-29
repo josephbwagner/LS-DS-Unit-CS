@@ -56,9 +56,19 @@ class HashTable:
             elem = LinkedPair(key, value)
             self.storage[index] = elem
             return
+        elif elem.key == key:
+            # print(f'elem: {elem.key}, {elem.value}')
+            elem.value = value
+            # print(f'New elem value: {elem.key}, {elem.value}')
+            return
         else:
             # Implement Linked List Chaining
-            print("ERROR: Hash Collision")
+            # print(f'Hash Collision: {key}, {elem.key}')
+            current = elem
+            while (current.next):
+                current = current.next
+            current.next = LinkedPair(key, value)
+            return
 
     def remove(self, key):
         '''
@@ -86,8 +96,17 @@ class HashTable:
         index = self._hash_mod(key)
         elem = self.storage[index]
         if elem is not None:
-            return elem.value
-        return None
+            if elem.next is not None:
+                current = elem
+                while (current):
+                    if current.key == key:
+                        return current.value
+                    else:
+                        current = current.next
+            else:
+                return elem.value
+        else:
+            return None
 
     def resize(self):
         '''
