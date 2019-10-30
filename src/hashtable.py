@@ -54,7 +54,7 @@ class HashTable:
         node = self.storage[index]
 
         # Traverse SLL of keys w/ same index
-        while (node.next and node.key != key):
+        while (node is not None and node.key != key):
             last_node = node
             node = last_node.next
 
@@ -70,55 +70,58 @@ class HashTable:
     def remove(self, key):
         '''
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
         Fill this in.
         '''
         index = self._hash_mod(key)
-        elem = self.storage[index]
-        if elem is not None:
-            temp = elem
-            elem = None
-            return temp.value
+        node = self.storage[index]
+        last_node = None
+
+        while (node is not None and node.key != key):
+            last_node = node
+            node = last_node.next
+
+        # If node doesn't exist error out
+        if node is None:
+            print(f'ERROR: Unable to remove key {key}')
+        else:
+            # If node is head
+            if last_node is None:
+                self.storage[index] = node.next
+            else:
+                last_node.next = node.next
 
     def retrieve(self, key):
         '''
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
         Fill this in.
         '''
         index = self._hash_mod(key)
-        elem = self.storage[index]
-        if elem is not None:
-            if elem.next is not None:
-                current = elem
-                while (current):
-                    if current.key == key:
-                        return current.value
-                    else:
-                        current = current.next
-            else:
-                return elem.value
-        else:
-            return None
+        node = self.storage[index]
+
+        while (node is not None):
+            if (node.key == key):
+                return node.value
+            node = node.next
+
+        return None
 
     def resize(self):
         '''
         Doubles the capacity of the hash table and
         rehash all key/value pairs.
-
         Fill this in.
         '''
         self.capacity *= 2
-        new_storage = [None] * self.capacity
-        for value in self.storage:
-            if value is not None:
-                index = self._hash_mod(value.key)
-                new_storage[index] = value
-        self.storage = new_storage
+        new_ht = HashTable(self.capacity)
+
+        for node in self.storage:
+            if node is not None:
+                while (node is not None):
+                    new_ht.insert(node.key, node.value)
+                    node = node.next
+        self.storage = new_ht.storage
 
 
 if __name__ == "__main__":
