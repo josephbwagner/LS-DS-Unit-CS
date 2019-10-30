@@ -51,24 +51,21 @@ class HashTable:
         Fill this in.
         '''
         index = self._hash_mod(key)
-        elem = self.storage[index]
-        if elem is None:
-            elem = LinkedPair(key, value)
-            self.storage[index] = elem
-            return
-        elif elem.key == key:
-            # print(f'elem: {elem.key}, {elem.value}')
-            elem.value = value
-            # print(f'New elem value: {elem.key}, {elem.value}')
-            return
+        node = self.storage[index]
+
+        # Traverse SLL of keys w/ same index
+        while (node.next and node.key != key):
+            last_node = node
+            node = last_node.next
+
+        # Overwrite value if node, key exists
+        # Else create new LL node at index
+        if node is not None:
+            node.value = value
         else:
-            # Implement Linked List Chaining
-            # print(f'Hash Collision: {key}, {elem.key}')
-            current = elem
-            while (current.next):
-                current = current.next
-            current.next = LinkedPair(key, value)
-            return
+            new_node = LinkedPair(key, value)
+            new_node.next = self.storage[index]
+            self.storage[index] = new_node
 
     def remove(self, key):
         '''
