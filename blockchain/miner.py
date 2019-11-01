@@ -9,6 +9,7 @@ from timeit import default_timer as timer
 
 import random
 
+proof = 10_000_000_000
 
 def proof_of_work(last_proof):
     """
@@ -22,9 +23,9 @@ def proof_of_work(last_proof):
     """
 
     start = timer()
+    global proof
 
     print("Searching for next proof")
-    proof = 1_000_000
     while valid_proof(last_proof, proof) is False:
         proof += 1
 
@@ -43,9 +44,6 @@ def valid_proof(last_hash, proof):
     last_hash = str(last_hash)
     guess = f'{last_hash}{proof}'.encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
-    # print(f'last_hash {last_hash}')
-    # print(f'guess {guess}')
-    # print(f'guess_hash {guess_hash}')
     return guess_hash[:6] == last_hash[-6:]
 
 
