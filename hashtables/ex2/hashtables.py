@@ -92,6 +92,8 @@ def hash_table_retrieve(hash_table, key):
             return current_pair.value
         current_pair = current_pair.next
 
+    return None
+
 
 # '''
 # Fill this in
