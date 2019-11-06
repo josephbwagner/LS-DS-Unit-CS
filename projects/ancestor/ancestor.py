@@ -1,5 +1,5 @@
 from pprint import pprint
-
+from util import Stack
 
 class Graph:
     '''Represent a graph as a dictionary
@@ -27,10 +27,9 @@ def earliest_ancestor(ancestors, starting_node):
     > For parent-child relationships: is a LinkedPair DS fitting?
     > This is reverse DFS, would a Stack DS be fitting?
     '''
-    # Instantiate Graph object
     g = Graph()
 
-    # Add vertices and edges
+    # Add vertices and edges to Graph object
     for parent, child in ancestors:
         if parent not in g.vertices:
             g.add_vertex(parent)
@@ -39,6 +38,22 @@ def earliest_ancestor(ancestors, starting_node):
         g.add_edge(parent, child)
 
     pprint(g.vertices)
+
+    s = Stack()
+    s.push(starting_node)
+
+    while s.size() > 0:
+        v = s.pop()
+        sentry = v
+        for vertex in g.vertices:
+            if v in g.vertices[vertex]:
+                print(f'Pushing vertex/parent to stack: {vertex}')
+                s.push(vertex)
+
+        if s.size() == 0:
+            return v
+
+    return -1
 
 
 
