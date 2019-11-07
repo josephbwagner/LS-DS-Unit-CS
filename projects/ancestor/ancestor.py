@@ -1,5 +1,6 @@
 from pprint import pprint
-from util import Stack
+from util import Queue
+
 
 class Graph:
     '''Represent a graph as a dictionary
@@ -27,65 +28,23 @@ def earliest_ancestor(ancestors, starting_node):
     > For parent-child relationships: is a LinkedPair DS fitting?
     > This is reverse DFS, would a Stack DS be fitting?
     '''
+    # Build graph: Add vertices and edges 
     g = Graph()
 
-    # Add vertices and edges to Graph object
-    for parent, child in ancestors:
-        if parent not in g.vertices:
-            g.add_vertex(parent)
-        if child not in g.vertices:
-            g.add_vertex(child)
-        g.add_edge(parent, child)
-
-    pprint(g.vertices)
-
-    s = Stack()
-    s.push(starting_node)
-
-    while s.size() > 0:
-        v = s.pop()
-        sentry = v
-        for vertex in g.vertices:
-            if v in g.vertices[vertex]:
-                print(f'Pushing vertex/parent to stack: {vertex}')
-                s.push(vertex)
-
-        if s.size() == 0:
-            return v
-
-    return -1
-
-
-
-
-    # # Determine parent of `starting_node`
-    # # or return -1 if no parent exists
-    # current_parent = None
-    # for vertex in g.vertices:
-    #     if starting_node in g.vertices[vertex]:
-    #         print(f'starting_node is child of: {vertex}')
-    #         current_parent = vertex
-    # if current_parent is None:
-    #     return -1
-
-    # # Traverse parent nodes until none remain
-    # while True:
-    #     # To detect change
-    #     sentry_var = current_parent
-    #     print(f'sentry: {sentry_var}, current_parent: {current_parent}')
-
-    #     # Find all parents
-    #     parents = []
-    #     for vertex in g.vertices:
-    #         if current_parent in g.vertices[vertex]:
-    #             parents.append(vertex)
-    #             # current_parent = vertex
-        
-    #     # Find 
-    #     for vertex in parents:
-
-
-    #     # Termination condition
-    #     if current_parent == sentry_var:
-    #         print(f'Earliest ancestor found: {current_parent}')
-    #         return current_parent
+    def last_ancestor(self, starting_vertex):
+        # Create an empty queue and enqueue the starting vertex ID
+        q = Queue()
+        q.enqueue(starting_vertex)
+        # Create variable to track ancestor, default to -1 if no ancestor.
+        ancestor = -1
+        # While the queue is not empty...
+        while q.size() > 0:
+            # Dequeue the first vertex
+            v = q.dequeue()
+            #if 
+            if bool(self.vertices[v]) is False and v != starting_vertex:
+                ancestor = v
+                # Then add all of its neighbors to the back of the queue
+            for neighbor in self.vertices[v]:
+                q.enqueue(neighbor)
+        return ancestor

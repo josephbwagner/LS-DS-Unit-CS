@@ -1,5 +1,8 @@
 from pprint import pprint
 import random
+import time
+
+from util import Stack, Queue
 
 
 class User:
@@ -23,7 +26,7 @@ class SocialGraph:
         if userID == friendID:
             print("WARNING: You cannot be friends with yourself")
         elif friendID in self.friendships[userID]\
-        or userID in self.friendships[friendID]:
+             or userID in self.friendships[friendID]:
             print("WARNING: Friendship already exists")
         else:
             self.friendships[userID].add(friendID)
@@ -52,7 +55,6 @@ class SocialGraph:
         self.lastID = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
         # Add users
         # call addUser() until numUsers
@@ -71,7 +73,6 @@ class SocialGraph:
 
         # Slice totalFriendships from the front to create friendships
         totalFriendships = avgFriendships * numUsers // 2
-        print(f'Friendships to create: {totalFriendships}\n')
         for i in range(totalFriendships):
             friendship = possibleFriendships[i]
             self.addFriendship(friendship[0], friendship[1])
@@ -85,15 +86,59 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+
+        # To get ALL paths, use BFS (with a Queue)
+        q = Queue()
+        q.enqueue([userID])
+        visited = {}
+
+        # As long as there are users not pop()ed into visited
+        while q.size() > 0:
+            # Initialize `path` from Queue
+            path = q.dequeue()
+            user = path[-1]
+
+            # If `user` not visited yet:
+            if user not in visited:
+                visited[user] = path
+
+                # Enqueue new `friend`s
+                for friend in self.friendships[user]:
+                    if friend not in visited:
+                        path_copy = path.copy()
+                        path_copy.append(friend)
+                        q.enqueue(path_copy)
+
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populateGraph(20, 3)
-    print('USERS:'); pprint(sg.users)
-    print('FRIENDSHIPS:'); pprint(sg.friendships)
-    # connections = sg.getAllSocialPaths(1)
-    # print(connections)
+    start_time = time.time()
+    sg.populateGraph(1000, 5)
+    end_time = time.time()
+    print(f"runtime: {end_time - start_time} seconds")
+    connections = sg.getAllSocialPaths(1)
+
+    total = 0
+    for userID in connections:
+        total += len(connections[userID]) - 1
+    print(len(connections))
+    print(total / len(connections))
+
+    totalConnections = 0
+    totalDegrees = 0
+    iterations = 10
+    for i in range(0, iterations):
+        sg.populateGraph(1000, 5)
+        connections = sg.getAllSocialPaths(1)
+        total = 0
+        for userID in connections:
+            total += len(connections[userID]) - 1
+        totalConnections += len(connections)
+        totalDegrees += total / len(connections)
+        print("-----")
+        print(f"Friends in network: {len(connections)}")
+        print(f"Avg degrees: {total / len(connections)}")
+    print(totalConnections / iterations)
+    print(totalDegrees / iterations)
