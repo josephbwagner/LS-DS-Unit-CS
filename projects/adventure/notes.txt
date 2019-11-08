@@ -27,5 +27,9 @@
 * Figure out how to populate `traversePath` with directions, not room IDs
 
 * Implement BFT for small map
+    * This will traverse all rooms in a given direction
+    * This will not traverse backwards to find unexplored rooms
+
 * Implement DFT for small map
+    * Adds functionality for reverse traversal to find unexplored rooms
 
