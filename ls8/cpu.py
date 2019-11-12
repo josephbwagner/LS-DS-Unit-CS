@@ -1,21 +1,49 @@
-"""CPU functionality."""
-
 import sys
+
+
+# Instructions
+HLT = 0b00000001  # Exit opcode
+LDI = 0b10000010  # Set op_a register to value op_b
+PRN = 0b01000111  # Print
+MUL = 0b10100010  # Multiply: ALU operation
+
 
 class CPU:
     """Main CPU class."""
-    # Instructions
-    HLT = 0b00000001  # Exit opcode
-    LDI = 0b10000010  # Set op_a register to value op_b
-    PRN = 0b01000111  # Print
-    MUL = 0b10100010  # Multiply: ALU operation
 
     def __init__(self):
         """Construct a new CPU."""
         self.ram = [0] * 255
         self.reg = [0] * 8
         self.pc = 0
-        self.fl = None  # Flag
+
+        self.dispatch_table = {}
+        self.dispatch_table[HLT] = self.handle_HLT
+        self.dispatch_table[LDI] = self.handle_LDI
+        self.dispatch_table[PRN] = self.handle_PRN
+        self.dispatch_table[MUL] = self.handle_MUL
+
+    def handle_HLT(self):
+        sys.exit(0)  # Successful exit
+
+    def handle_PRN(self):
+        op_a = self.ram_read(self.pc+1)
+        print(self.ram[op_a])
+
+    def handle_MUL(self):
+        # Read values to multiply
+        op_a = int(self.ram_read(self.pc+1))  # RAM Register a
+        op_b = int(self.ram_read(self.pc+2))  # RAM Register b
+        # Copy values to ALU register
+        self.reg[op_a] = self.ram_read(op_a)
+        self.reg[op_b] = self.ram_read(op_b)
+        # Perform ALU computation, overwrite RAM register op_a
+        self.ram_write(op_a, self.alu("MUL", op_a, op_b))
+
+    def handle_LDI(self):
+        op_a = int(self.ram_read(self.pc+2))  # Value in base10
+        op_b = int(self.ram_read(self.pc+1))  # Register in base10
+        self.ram_write(op_b, op_a)
 
     def load(self):
         """Load a program into memory."""
@@ -81,27 +109,6 @@ class CPU:
             operand_count = IR >> 6
             instr_len = operand_count + 1
 
-            # Use a branch table (instructions in README)
-            if IR == self.HLT:
-                sys.exit(0)  # Successful exit status
-            elif IR == self.PRN:
-                op_a = self.ram_read(self.pc+1)
-                print(self.ram[op_a])
-                self.pc += instr_len
-            elif IR == self.LDI:
-                op_a = int(self.ram_read(self.pc+2))  # Value in base10
-                op_b = int(self.ram_read(self.pc+1))  # Register in base10
-                self.ram_write(op_b, op_a)
-                self.pc += instr_len
-            elif IR == self.MUL:
-                # Read values to multiply
-                op_a = int(self.ram_read(self.pc+1))  # RAM Register a
-                op_b = int(self.ram_read(self.pc+2))  # RAM Register b
-                # Copy values to ALU register
-                self.reg[op_a] = self.ram_read(op_a)
-                self.reg[op_b] = self.ram_read(op_b)
-                # Perform ALU computation, overwrite RAM register op_a
-                self.ram_write(op_a, self.alu("MUL", op_a, op_b))
-                self.pc += instr_len
-            else:
-                sys.exit('OPCODE UNKNOWN. EXITING.')  # Prints and returns 1
+            # Dispatch table
+            self.dispatch_table[IR]()
+            self.pc += instr_len
