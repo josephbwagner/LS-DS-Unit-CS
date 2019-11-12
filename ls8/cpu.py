@@ -8,6 +8,7 @@ class CPU:
     HLT = 0b00000001  # Exit opcode
     LDI = 0b10000010  # Set op_a register to value op_b
     PRN = 0b01000111  # Print
+    MUL = 0b10100010  # Multiply: ALU operation
 
     def __init__(self):
         """Construct a new CPU."""
@@ -44,9 +45,11 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
+        return self.reg[reg_a]
 
     def trace(self):
         """
@@ -89,6 +92,16 @@ class CPU:
                 op_a = int(self.ram_read(self.pc+2))  # Value in base10
                 op_b = int(self.ram_read(self.pc+1))  # Register in base10
                 self.ram_write(op_b, op_a)
-                self.pc += (instr_len)
+                self.pc += instr_len
+            elif IR == self.MUL:
+                # Read values to multiply
+                op_a = int(self.ram_read(self.pc+1))  # RAM Register a
+                op_b = int(self.ram_read(self.pc+2))  # RAM Register b
+                # Copy values to ALU register
+                self.reg[op_a] = self.ram_read(op_a)
+                self.reg[op_b] = self.ram_read(op_b)
+                # Perform ALU computation, overwrite RAM register op_a
+                self.ram_write(op_a, self.alu("MUL", op_a, op_b))
+                self.pc += instr_len
             else:
                 sys.exit('OPCODE UNKNOWN. EXITING.')  # Prints and returns 1
