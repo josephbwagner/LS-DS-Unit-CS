@@ -5,7 +5,9 @@ import sys
 HLT = 0b00000001  # Exit opcode
 LDI = 0b10000010  # Set op_a register to value op_b
 PRN = 0b01000111  # Print
-MUL = 0b10100010  # Multiply: ALU operation
+MUL = 0b10100010  # ALU opcode
+PUSH = 0b01000101 # Stack opcode
+POP = 0b01000110  # Stack opcode
 
 
 class CPU:
@@ -13,15 +15,19 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        self.ram = [0] * 255
-        self.reg = [0] * 8
-        self.pc = 0
+        self.pc = 0  # Program counter
+        self.ram = [0] * 256
+        self.reg = [0] * 8  # Only vals b/t 0-255, bitwise AND results with 0xFF
+        self.reg[7] = 0xf4  # Reserved register: Stack pointer, stack grows down
+        self.sp = self.reg[7]
 
         self.dispatch_table = {}
         self.dispatch_table[HLT] = self.handle_HLT
         self.dispatch_table[LDI] = self.handle_LDI
         self.dispatch_table[PRN] = self.handle_PRN
         self.dispatch_table[MUL] = self.handle_MUL
+        self.dispatch_table[PUSH] = self.handle_PUSH
+        self.dispatch_table[POP] = self.handle_POP
 
     def handle_HLT(self):
         sys.exit(0)  # Successful exit
@@ -44,6 +50,20 @@ class CPU:
         op_a = int(self.ram_read(self.pc+2))  # Value in base10
         op_b = int(self.ram_read(self.pc+1))  # Register in base10
         self.ram_write(op_b, op_a)
+
+    def handle_PUSH(self):
+        # Decrement stack pointer
+        self.sp -= 1
+        # Copy value in register to SP address
+        op_a = self.ram_read(self.ram_read(self.pc+1))
+        self.ram_write(self.sp, op_a)
+
+    def handle_POP(self):
+        # Copy val from self.sp address to register
+        op_a = self.ram_read(self.pc+1)
+        self.ram_write(op_a, self.ram_read(self.sp))
+        # Increment stack pointer
+        self.sp += 1
 
     def load(self):
         """Load a program into memory."""
