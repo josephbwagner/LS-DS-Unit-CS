@@ -1,0 +1,156 @@
+#######################
+IMPLEMENTATION NOTES
+#######################
+
+What is MVP?
+* Mine 1 Lambda Coin
+
+
+What high level steps are required to meet MVP?
+1. Map traversal and map building (BFS, DFS)
+2. Find shop (to sell treasure)
+3. Collect 1000 gold (to change name)
+4. Find Name Changer room (required to mine coins)
+5. Find the wishing well to obtain clue for the coin mining location
+6. Navigate to the coin mining room
+7. Mine coin, get proof
+
+
+What could help with achieving MVP?
+* Using the Wise Explorer perk as much as possible
+* Finding the shop as quickly as possible (hint: it only has one exit: 'E')
+* Don't become over-encumbered
+    * Acquire the "ghostly companion" and have it hold heaviest item
+    * Examine an item before picking it up
+* Wear stat-boosting items and pray at all shrines found
+    * Then incorporate Flight and Dash movements where possible
+
+
+What commands exist for this game?
+* Initialization:       `api/adv/init`
+* Move:                 `api/adv/move`
+* Wise Explorer:        `api/adv/move`
+* Take:                 `api/adv/take`
+* Drop:                 `api/adv/drop`
+* Sell:                 `api/adv/sell`
+* Examine:              `api/adv/examine`
+* Inventory/Status:     `api/adv/status`
+* Wear:                 `api/adv/wear`
+* Undress:              `api/adv/undress`
+* Change name:          `api/adv/change_name`
+* Pray:                 `api/adv/pray`
+* Flight:               `api/adv/fly`
+* Dash:                 `api/adv/dash`
+* Companion carry:      `api/adv/carry`
+* Companion receive:    `api/adv/receive`
+* Mine:                 `api/bc/mine`
+* Get last proof:       `api/bc/last_proof`
+* Get LC balance:       `api/bc/get_balance`
+* Transmogrify LC:      `api/adv/transmogrify`
+
+
+What data needs to be acquired, stored, and used?
+* All Room data (for map building and tasks): 
+    * Most important: room_id, title, items, exits, cooldown
+    * Everything else: description, coordinates, players, errors, messages
+* Shop location
+* Name Changer location
+* Wishing well location
+* Cooldown time for non-penalized movement
+* Inventory and player stats (to upgrade wearables, prevent over-encumberance)
+* It'd be helpful to log what places are dash-able and fly-able
+
+
+What Python modules are needed to achieve required functionality?
+* requests (makes API calls and can return JSON/dict responses)
+* json (might be better for storing player and map data than a Dict)
+* hashlib.sha256 (mine Lambda Coins)
+* time (to calculate cooldown)
+* More TBD
+
+
+What unanswered questions do I have right now?
+* If I stop playing the game, is my location persisted remotely?
+    * Or will I have to start at room 0 after some time?
+* Why is Pirate Ry important?
+    * He can be found in the room with title "Pirate Ry"
+* Does graph traversal need to be programmatic (BFS, DFS)?
+    * Can I manually traverse from room to room and input game commands?
+    * If so, consider a simple CLI or GUI frontend for better controls/HUD.
+    * Think about how to visualize the game map
+
+
+
+
+
+########################
+GAME WORLD NOTES
+########################
+
+
+##########
+ROOMS
+##########
+* Rooms have a UUID (in the response data): "room_id": 0
+* Other seemingly important room data:
+    * title, coords, items, exits, cooldown, errors, messages
+* There are 500 rooms
+
+
+##########
+MOVEMENT
+##########
+* One request per 15 seconds
+    * Not waiting incurs a penalty
+* All actions are executed via REST API commands
+
+
+##########
+MAP BUILDING
+##########
+* You start in `room 0`
+* You can build a map like: {0: {'n':'?', 's':'?', 'e':'?', 'w':'?'}}
+    * You can update the map for 0['n'] and 10['s'] after moving N to room 10
+* Log as much info as possible, not just room IDs and exits
+* WISE EXPLORER BONUS: 50% CD reduction by correctly predicting next room ID
+
+
+##########
+TREASURE/STATUS/INV
+##########
+* The API has a `/api/adv/take` and `/drop` endpoint, supply {'name':'treasure'}
+* Examine items/players with `/api/adv/examine` {'name':'[item or player]'}
+* Selling treasure is done in the shop, not far from the starting location
+    * endpoint `api/adv/sell` with arg {'name':'treasure'}
+    * Room 'title':'Shop', 'exits':['e']
+    * Must confirm sell with a second response
+* Use endpoint `api/adv/status` to check status and inventory
+* `encumberance` is current weight carried
+* `strength` is carry capacity
+* Wear equipment to boost spd/str: `adi/adv/wear` {'name':'[name of wearable]'}
+* Use a "ghostly companion" to carry a single item (choose heaviest):
+    * `api/adv/carry` {'name':'[item name]'}
+    * `api/adv/receive`
+
+
+##########
+Name Changer/Shrine/Powers
+##########
+* You must change your name to mine Lambda Coins
+    * This requires 1000 gold
+    * `api/adv/change_name` {'name':'[new name]'}
+* Pray at shrines to earn new powers:
+    * `api/adv/pray`
+* Flight removes movement penalties on elevated terrain:
+    * `api/adv/fly`
+* Dash allows you to traverse many rooms in a straight line:
+    * api/adv/dash/` {'direction':'n', 'num_rooms':'5', 'next_room_ids':'10,19,20,63,72'}
+    * num_rooms and next_room_ids must be exact for dash to work
+
+##########
+MINING LAMBDA Coins
+##########
+* Complete this when ready
+
+
+
