@@ -4,6 +4,7 @@ Detect any cycle in a Linked List. Note that the head pointer may be 'None' if t
 The function should return a Boolean value if the LL contains a cycle, or not.
 '''
 
+
 class Node(object):
     def __init__(self, data=None, next=None):
         self.data = data
@@ -27,5 +28,3 @@ def has_cycle(head):
 
     # If we reach end of loop, we've reached end of LL
     return False
-
-

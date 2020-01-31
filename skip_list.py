@@ -5,8 +5,9 @@
 #
 # Is a node, a single node, or a collection of all layers per index?
 # aka "station representation"
-# If we opt for station repr. we could represent it as a 
+# If we opt for station repr. we could represent it as a
 # list of pointers to the next station.
+
 
 class SkipNode(object):
     def __init__(self, elem=None):
@@ -29,16 +30,15 @@ class SkipList(object):
             for i in range(max_height):
                 # For the ith node, connect it's 'below' to the i-1 node
                 if i == 0:
-                    self.head[i].above = self.head[i+1]
+                    self.head[i].above = self.head[i + 1]
                 elif i == len(self.head) - 1:
-                    self.head[i].below = self.head[i-1]
+                    self.head[i].below = self.head[i - 1]
                 else:
-                    self.head[i].above = self.head[i+1]
-                    self.head[i].below = self.head[i-1]
+                    self.head[i].above = self.head[i + 1]
+                    self.head[i].below = self.head[i - 1]
 
     def search(self):
         pass
 
     def delete(self):
         pass
-

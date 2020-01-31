@@ -1,7 +1,6 @@
 from detect_cycle import Node, has_cycle
 # from skip_list import *
 
-
 ### Linked List Cycle Detector Code ###
 head = Node(0, None)
 node_1 = Node(1, None)
