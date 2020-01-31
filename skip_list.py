@@ -1,18 +1,12 @@
 # Skip list: probabilistic data structure based on the Linked list
 # Description of a skip list: https://brilliant.org/wiki/skip-lists/
 
-### Design Notes ###
-#
-# Is a node, a single node, or a collection of all layers per index?
-# aka "station representation"
-# If we opt for station repr. we could represent it as a
-# list of pointers to the next station.
-
 
 class SkipNode(object):
     def __init__(self, elem=None):
         self.elem = elem
 
+        # 'Square' representation (not list, station-like representation)
         self.prev = None
         self.next = None
         self.below = None
@@ -37,8 +31,31 @@ class SkipList(object):
                     self.head[i].above = self.head[i + 1]
                     self.head[i].below = self.head[i - 1]
 
-    def search(self):
-        pass
+    def search(self, target):
+        '''
+        Starts at the top node of the head
+        If the next node along this line > target:
+          Move down a layer, check next node along line again
+          If the next node along line <= target:
+                Move right to next node
+                Stop criteria: target is found
+        '''
+        # Start at the last node in self.head
+        start = self.head[-1]
 
-    def delete(self):
+        # If below exists go there
+        while start.below:
+            current = start.below
+            # Go right if next < target
+            while target >= current.next:
+                current = current.next
+
+        return current
+
+    def insert(self, val):
+        # Search the skip list for the largest value < val
+            # Assuming the value doesn't exist in the list
+        # Create a new node with the val and connect it to the found node
+        # Add layers to this new node by flipping coins to determine # of layers
+        # Connect layers to nodes in the same layers
         pass
