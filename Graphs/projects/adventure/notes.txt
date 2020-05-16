@@ -1,0 +1,35 @@
+=== POLYAS NOTES ===
+====================
+
+1. Understand the Problem
+==========================================
+* What are you asked to find?
+    - You are provided with a pre-generated graph consisting of 500 rooms. You    are responsible for filling traversalPath with directions that, when        walked in order, will visit every room on the map at least once.
+
+* Can you restate the problem in your own words?
+    - Given a graph of rooms and an empty list `traversalPath`, use the BFT and 
+      DFT algorithms to populate `traversalPath` with the directional steps needed to visit every room. This will involve constructing a graph of visited/unvisited rooms as well.
+
+* Implementation Details:
+    - Create an adjacency Dict(ID: exits) while traversing to keep track of       visited rooms: 
+        * {0: {'n': '?', 's': '?', 'w': '?', 'e': '?'}}
+    - Traversing to a new room should update the adjacencies and append to        `traversalPath`
+        * {0: {'n': '?', 's': 5, 'w': '?', 'e': '?'},
+           5: {'n': 0, 's': '?', 'e': '?'}}
+    - `traversalPath` might be populated with room IDs, so be sure to convert      this data into directions n,s,e,w
+    - Useful commands: `player.currentRoom.id`, `player.currentRoom.getExits()`   and `player.travel(direction)`
+
+2. Devise a Plan: Break the Problem Down
+==========================================
+* Start by printing a smaller `room_graph`
+* Manually traverse the `Player` to an adjacent room
+* Traverse all rooms in small map brute force with loops
+* Figure out how to populate `traversePath` with directions, not room IDs
+
+* Implement BFT for small map
+    * This will traverse all rooms in a given direction
+    * This will not traverse backwards to find unexplored rooms
+
+* Implement DFT for small map
+    * Adds functionality for reverse traversal to find unexplored rooms
+
